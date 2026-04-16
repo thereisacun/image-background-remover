@@ -15,7 +15,6 @@ export default {
       'Access-Control-Allow-Headers': '*',
     };
 
-    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
@@ -27,7 +26,6 @@ export default {
       });
     }
 
-    // Only allow POST
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ detail: 'Method not allowed' }), {
         status: 405,
@@ -46,7 +44,6 @@ export default {
         });
       }
 
-      // Validate file type
       if (!ALLOWED_TYPES.includes(file.type)) {
         return new Response(
           JSON.stringify({ detail: 'Unsupported file type. Use PNG, JPEG, or WebP.' }),
@@ -54,7 +51,6 @@ export default {
         );
       }
 
-      // Validate file size
       if (file.size > MAX_FILE_SIZE) {
         return new Response(
           JSON.stringify({ detail: 'File exceeds 10 MB limit.' }),
@@ -62,7 +58,6 @@ export default {
         );
       }
 
-      // Forward to Remove.bg API
       const rbFormData = new FormData();
       rbFormData.append('image_file', file);
       rbFormData.append('size', 'auto');

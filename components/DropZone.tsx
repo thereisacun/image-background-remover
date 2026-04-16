@@ -8,7 +8,7 @@ interface DropZoneProps {
   disabled?: boolean;
 }
 
-export function DropZone({ onFileSelected, disabled }: DropZoneProps) {
+export default function DropZone({ onFileSelected, disabled }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,11 +16,11 @@ export function DropZone({ onFileSelected, disabled }: DropZoneProps) {
   function validateAndEmit(file: File) {
     setError(null);
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError('请上传 PNG、JPEG 或 WebP 格式图片');
+      setError('Please upload PNG, JPEG, or WebP images');
       return;
     }
     if (file.size > MAX_SIZE) {
-      setError('图片不能超过 10 MB');
+      setError('Image must be under 10 MB');
       return;
     }
     onFileSelected(file);
@@ -37,13 +37,18 @@ export function DropZone({ onFileSelected, disabled }: DropZoneProps) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) validateAndEmit(file);
-    // reset so same file can be re-selected
     e.target.value = '';
   }
 
   return (
     <div
-      className={`dropzone ${dragOver ? 'dragover' : ''} ${disabled ? 'disabled' : ''}`}
+      className={`
+        border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all
+        ${dragOver
+          ? 'border-blue-500 bg-blue-50'
+          : 'border-gray-300 bg-white hover:border-gray-400'}
+        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+      `}
       onDragOver={e => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
@@ -54,12 +59,20 @@ export function DropZone({ onFileSelected, disabled }: DropZoneProps) {
         type="file"
         accept={ALLOWED_TYPES.join(',')}
         onChange={handleChange}
-        style={{ display: 'none' }}
+        className="hidden"
       />
-      <div className="dropzone-icon">📤</div>
-      <p className="dropzone-title">拖拽图片到此处，或点击上传</p>
-      <p className="dropzone-hint">PNG, JPEG, WebP · 最大 10MB</p>
-      {error && <p className="dropzone-error">{error}</p>}
+
+      <div className="text-5xl mb-4">📤</div>
+      <p className="text-lg font-medium text-gray-700 mb-1">
+        Drop your image here, or click to upload
+      </p>
+      <p className="text-sm text-gray-400">
+        PNG, JPEG, WebP · Max 10MB
+      </p>
+
+      {error && (
+        <p className="mt-4 text-sm text-red-600 font-medium">{error}</p>
+      )}
     </div>
   );
 }
