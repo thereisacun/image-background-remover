@@ -1,0 +1,9 @@
+name = "bg-remover-api"
+main = "workers/remove-bg/index.js"
+compatibility_date = "2024-04-16"
+
+[vars]
+# Remove.bg API key set via: wrangler secret put REMOVE_BG_API_KEY
+
+[env.production]
+vars = { REMOVE_BG_API_KEY = "" }
